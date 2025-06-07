@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temperature Forecast</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    #forecastChart {
+      max-width: 800px;
+      max-height: 400px;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h2>Forecast Battery Temperature</h2>
+  <input id="tempInput" type="number" placeholder="Enter temperature (°C)">
+  <button onclick="submitTemperature()">Predict</button>
+  <div style="width: 100%; max-width: 800px; margin-top: 20px;">
+    <canvas id="forecastChart"></canvas>
+  </div>
+
+  <script>
+    let chartInstance = null;  // Store chart instance globally
+
+    async function submitTemperature() {
+      const temp = parseFloat(document.getElementById("tempInput").value);
+
+      // Input validation
+      if (isNaN(temp)) {
+        alert("Please enter a valid temperature.");
+        return;
+      }
+
+      if (temp > 50) {
+        alert("Temperature above 50°C is not allowed. Please enter normal Battery Temperature!");
+        return;
+      }
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ temperature: temp })
+      });
+
+      const data = await response.json();
+      const preds = data.predicted_temperatures;
+
+      const ctx = document.getElementById('forecastChart').getContext('2d');
+
+      // Destroy previous chart if exists
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [...Array(preds.length).keys()],
+          datasets: [{
+            label: "Forecasted Temperature",
+            data: preds,
+            borderColor: 'blue',
+            backgroundColor: 'lightblue',
+            fill: false,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { title: { display: true, text: "Future Cycles" }},
+            y: { title: { display: true, text: "Temperature (°C)" }}
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
