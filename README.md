@@ -143,18 +143,7 @@ Dataset: **B0005 Battery aging dataset**
 
 ---
 
-## ✏️ License
 
-MIT License
-
----
-
-## 📢 Acknowledgments
-
-* NASA Prognostics Center of Excellence for dataset
-* Flask & Chart.js community
-
----
 
 **If you like this project, give it a ⭐️ on GitHub! 🚀**
 
